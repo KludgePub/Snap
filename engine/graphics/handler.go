@@ -2,7 +2,7 @@ package graphics
 
 import (
 	"fmt"
-	"github.com/LinMAD/SnapEngine/engine/platform"
+	"github.com/LinMAD/Snap/engine/platform"
 	"github.com/veandco/go-sdl2/sdl"
 )
 

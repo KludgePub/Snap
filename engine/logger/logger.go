@@ -1,8 +1,6 @@
 package logger
 
-import (
-	"log"
-)
+import "log"
 
 const debugTag = "|DEBUG|"
 

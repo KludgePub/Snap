@@ -2,15 +2,15 @@ package core
 
 import (
 	"fmt"
-	"github.com/LinMAD/SnapEngine/engine/entity"
 
 	"github.com/veandco/go-sdl2/sdl"
 
-	"github.com/LinMAD/SnapEngine/engine/graphics"
-	"github.com/LinMAD/SnapEngine/engine/graphics/data"
-	"github.com/LinMAD/SnapEngine/engine/graphics/factory"
-	"github.com/LinMAD/SnapEngine/engine/logger"
-	"github.com/LinMAD/SnapEngine/engine/platform"
+	"github.com/LinMAD/Snap/engine/entity"
+	"github.com/LinMAD/Snap/engine/graphics"
+	"github.com/LinMAD/Snap/engine/graphics/data"
+	"github.com/LinMAD/Snap/engine/graphics/factory"
+	"github.com/LinMAD/Snap/engine/logger"
+	"github.com/LinMAD/Snap/engine/platform"
 )
 
 // snapEngine core object with dependencies

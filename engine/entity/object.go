@@ -1,6 +1,6 @@
 package entity
 
-import "github.com/LinMAD/SnapEngine/engine/graphics/data"
+import "github.com/LinMAD/Snap/engine/graphics/data"
 
 // SceneObject interface represents as actor in the scene, can be anything
 type SceneObject interface {

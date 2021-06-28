@@ -1,4 +1,4 @@
-module github.com/LinMAD/SnapEngine
+module github.com/LinMAD/Snap
 
 go 1.16
 

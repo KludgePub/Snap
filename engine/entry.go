@@ -3,9 +3,9 @@ package engine
 import (
 	"runtime"
 
-	"github.com/LinMAD/SnapEngine/engine/core"
-	"github.com/LinMAD/SnapEngine/engine/entity"
-	"github.com/LinMAD/SnapEngine/engine/platform"
+	"github.com/LinMAD/Snap/engine/core"
+	"github.com/LinMAD/Snap/engine/entity"
+	"github.com/LinMAD/Snap/engine/platform"
 )
 
 // Entry point for application

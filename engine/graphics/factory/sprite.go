@@ -1,9 +1,10 @@
 package factory
 
 import (
-	"github.com/LinMAD/SnapEngine/engine/entity"
-	"github.com/LinMAD/SnapEngine/engine/graphics/data"
 	"github.com/veandco/go-sdl2/sdl"
+
+	"github.com/LinMAD/Snap/engine/entity"
+	"github.com/LinMAD/Snap/engine/graphics/data"
 )
 
 // SpriteFactory produces sprites

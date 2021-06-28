@@ -1,4 +1,4 @@
-# SnapEngine
+# Snap
 
 > Simple educational 2D micro engine, designed with Golang and SDL2 bindings to allow a bit easier to build primitive 2D games or scenes to play with.
 
@@ -6,17 +6,23 @@ ___
 
 ## Usage
 
-- Build commands can be found in makefile
+Build command can be different on your OS but that shouldn't be difficult.
+Since SDL2 can be compiled on any platform.
+
+If you are using Linux Debian 10, then you can execute this:
+```text
+env CGO_ENABLED=1 CC=gcc GOOS=linux GOARCH=amd64 go build -tags -gcflags="all=-N -l" -o Snap --race main.go
+```
 
 Example of main file:
 ```go
 package main
 
 import (
-	"github.com/LinMAD/SnapEngine/engine"
-	"github.com/LinMAD/SnapEngine/engine/entity"
-	"github.com/LinMAD/SnapEngine/engine/graphics/data"
-	"github.com/LinMAD/SnapEngine/engine/platform"
+	"github.com/LinMAD/Snap/engine"
+	"github.com/LinMAD/Snap/engine/entity"
+	"github.com/LinMAD/Snap/engine/graphics/data"
+	"github.com/LinMAD/Snap/engine/platform"
 )
 
 func main() {
