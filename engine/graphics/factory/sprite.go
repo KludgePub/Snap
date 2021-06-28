@@ -1,6 +1,7 @@
 package factory
 
 import (
+	"github.com/LinMAD/SnapEngine/engine/entity"
 	"github.com/LinMAD/SnapEngine/engine/graphics/data"
 	"github.com/veandco/go-sdl2/sdl"
 )
@@ -20,11 +21,19 @@ func NewSpriteFactory(r *sdl.Renderer, t *data.TextureContainer) *SpriteFactory 
 // textureID in texture container
 // x, y coordinates on screen
 // w - width, h - height of texture
-func (f *SpriteFactory) Draw(textureID string, x, y int32, w, h int32, flip sdl.RendererFlip) error {
-	src := sdl.Rect{W: w, H: h}
-	dst := sdl.Rect{X: x, Y: y, W: w, H: h}
+func (f *SpriteFactory) Draw(object entity.SceneObject, flip sdl.RendererFlip) error {
+	src := sdl.Rect{
+		W: int32(object.GetDrawableInformation().Width),
+		H: int32(object.GetDrawableInformation().Height),
+	}
+	dst := sdl.Rect{
+		X: object.GetPosition().X,
+		Y: object.GetPosition().Y,
+		W: int32(object.GetDrawableInformation().Width),
+		H: int32(object.GetDrawableInformation().Height),
+	}
 
-	t, tErr := f.textures.Get(textureID)
+	t, tErr := f.textures.Get(object.GetDrawableInformation().TextureData)
 	if tErr != nil {
 		return tErr
 	}
@@ -35,4 +44,3 @@ func (f *SpriteFactory) Draw(textureID string, x, y int32, w, h int32, flip sdl.
 
 	return nil
 }
-

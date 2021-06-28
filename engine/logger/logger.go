@@ -12,11 +12,11 @@ type Logger struct {
 }
 
 // LogDebug message
-func (l *Logger) LogDebug(msg string)  {
+func (l *Logger) LogDebug(msg string) {
 	log.Printf("%s %s\n", debugTag, msg)
 }
 
 // LogDebugWithObject message and any object
-func (l *Logger) LogDebugWithObject(msg string, object interface{})  {
+func (l *Logger) LogDebugWithObject(msg string, object interface{}) {
 	log.Printf("%s %s object - %v\n", debugTag, msg, object)
 }

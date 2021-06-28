@@ -2,6 +2,7 @@ package core
 
 import (
 	"fmt"
+	"github.com/LinMAD/SnapEngine/engine/entity"
 
 	"github.com/veandco/go-sdl2/sdl"
 
@@ -21,7 +22,7 @@ type snapEngine struct {
 	isRunning     bool
 	isHasFocus    bool
 	isLevelLoaded bool
-	FPS           uint16
+	fps           uint16
 
 	//
 	// Graphics related
@@ -29,6 +30,10 @@ type snapEngine struct {
 	screen       platform.ScreenConfiguration
 	nativeWindow *sdl.Window
 	renderer     *sdl.Renderer
+
+	//
+	// sceneObjects (actors)
+	sceneObjects []entity.SceneObject
 
 	//
 	// Other dependencies
@@ -66,14 +71,16 @@ func (eng *snapEngine) Init() (err error) {
 	return nil
 }
 
-// LoadLevel creates level window for example game lvl
-func (eng *snapEngine) LoadLevel() error {
-	eng.log.LogDebug("Loading level...")
+// LoadComponents to engine with external logic
+func (eng *snapEngine) LoadComponents(sceneObjects []entity.SceneObject) error {
+	eng.log.LogDebug("Loading components...")
+	eng.sceneObjects = sceneObjects
 
-	// TODO GetAll level information (assets to load, other data)
 	// TODO Load in async
-	if err := eng.dataTextures.LoadFromFile("assets/snap_engine_logo.png", "logo"); err != nil {
-		return err
+	for _, actor := range eng.sceneObjects {
+		if err := eng.dataTextures.LoadFromFile(actor.GetDrawableInformation().TextureData); err != nil {
+			return err
+		}
 	}
 
 	eng.isLevelLoaded = true
@@ -81,9 +88,9 @@ func (eng *snapEngine) LoadLevel() error {
 	return nil
 }
 
-// UnloadLevel cleans level window dependencies
-func (eng *snapEngine) UnloadLevel() {
-	eng.log.LogDebug("Unload level...")
+// UnloadComponents cleans module dependencies
+func (eng *snapEngine) UnloadComponents() {
+	eng.log.LogDebug("Unload components...")
 
 	for n, t := range eng.dataTextures.GetAll() {
 		if err := t.Destroy(); err != nil {
@@ -115,7 +122,11 @@ func (eng *snapEngine) HandleEvents() {
 // HandleUpdate of engine state, physics simulation etc
 func (eng *snapEngine) HandleUpdate() {
 	// TODO Add Engine state handler
-	eng.nativeWindow.SetTitle(fmt.Sprintf("%s |FPS: %d|", eng.screen.Title, eng.FPS))
+	eng.nativeWindow.SetTitle(fmt.Sprintf("%s |FPS: %d|", eng.screen.Title, eng.fps))
+
+	for _, actor := range eng.sceneObjects {
+		actor.OnUpdate()
+	}
 }
 
 // HandleRender window frame
@@ -124,9 +135,15 @@ func (eng *snapEngine) HandleRender() error {
 		return fmt.Errorf("renderer failed to clear frame: %s", err.Error())
 	}
 
-	// TODO Use splash to test if engine can render
-	if err := eng.spriteFactory.Draw("logo", 150, 50, 500, 500, sdl.FLIP_NONE); err != nil {
-		return err
+	for _, actor := range eng.sceneObjects {
+		flipMode := sdl.FLIP_NONE
+		if actor.GetDrawableInformation().IsFlipped {
+			flipMode = sdl.FLIP_HORIZONTAL
+		}
+
+		if err := eng.spriteFactory.Draw(actor, flipMode); err != nil {
+			return err
+		}
 	}
 
 	eng.renderer.Present()
@@ -138,8 +155,9 @@ func (eng *snapEngine) HandleRender() error {
 func (eng *snapEngine) HandleClean() {
 	var err error
 	eng.log.LogDebug("Cleaning resources...")
+
 	if eng.isLevelLoaded {
-		eng.UnloadLevel()
+		eng.UnloadComponents()
 	}
 
 	if err = eng.renderer.Destroy(); err != nil {
@@ -164,11 +182,17 @@ func (eng *snapEngine) HasFocus() bool {
 	return eng.isHasFocus
 }
 
+// DeltaTime tick time in milliseconds
 func (eng *snapEngine) DeltaTime() uint32 {
 	return sdl.GetTicks()
 }
 
-// Delay waits milliseconds before continuing
-func (eng *snapEngine) Delay(milliSeconds uint32) {
+// SetDelay waits milliseconds before continuing
+func (eng *snapEngine) SetDelay(milliSeconds uint32) {
 	sdl.Delay(milliSeconds)
+}
+
+// SetFps counter
+func (eng *snapEngine) SetFps(fps uint16) {
+	eng.fps = fps
 }

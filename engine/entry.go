@@ -4,13 +4,15 @@ import (
 	"runtime"
 
 	"github.com/LinMAD/SnapEngine/engine/core"
+	"github.com/LinMAD/SnapEngine/engine/entity"
 	"github.com/LinMAD/SnapEngine/engine/platform"
 )
 
 // Entry point for application
 type Entry struct {
-	sc      *platform.ScreenConfiguration
-	isDebug bool
+	sc           *platform.ScreenConfiguration
+	sceneObjects []entity.SceneObject
+	isDebug      bool
 }
 
 func init() {
@@ -25,14 +27,16 @@ func New(screenConfig *platform.ScreenConfiguration, isDebugMode bool) Entry {
 	}
 }
 
-// TODO Allow to load any level in any time
-// TODO Add built in level with loading information, init, loading user plugin, errors feedback
+// LoadSceneObjects will be used during the scene
+func (e *Entry) LoadSceneObjects(sceneObjects []entity.SceneObject) {
+	e.sceneObjects = sceneObjects
+}
 
 // Run engine work
 func (e *Entry) Run() error {
-	var frameStart uint32  // Initial time of one frame
-	var frameTime int32    // Elapsed time to finish frame
-	var frameDelay int32   // Delay time before next frame
+	var frameStart uint32 // Initial time of one frame
+	var frameTime int32   // Elapsed time to finish frame
+	var frameDelay int32  // SetDelay time before next frame
 
 	// Check frame lock
 	if e.sc.FrameRateLock == 0 {
@@ -44,7 +48,7 @@ func (e *Entry) Run() error {
 	if err := snapEngine.Init(); err != nil {
 		return err
 	}
-	if err := snapEngine.LoadLevel(); err != nil {
+	if err := snapEngine.LoadComponents(e.sceneObjects); err != nil {
 		return err
 	}
 
@@ -58,13 +62,12 @@ func (e *Entry) Run() error {
 			return err
 		}
 
-		snapEngine.FPS++
 		frameTime = int32(snapEngine.DeltaTime() - frameStart)
 
 		// Slow down render if the system can work too fast
 		if frameDelay > frameTime {
-			snapEngine.FPS = e.sc.FrameRateLock / uint16(frameTime + 1)
-			snapEngine.Delay(uint32(frameDelay - frameTime))
+			snapEngine.SetFps(e.sc.FrameRateLock / uint16(frameTime+1))
+			snapEngine.SetDelay(uint32(frameDelay - frameTime))
 		}
 	}
 

@@ -1,7 +1,7 @@
 package platform
 
 // ScreenConfiguration contains settings for window
-type ScreenConfiguration struct{
+type ScreenConfiguration struct {
 	FrameRateLock uint16
 
 	// Width of window
