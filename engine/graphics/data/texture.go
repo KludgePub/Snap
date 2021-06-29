@@ -30,7 +30,11 @@ func NewTexturesContainer(r *sdl.Renderer) *TextureContainer {
 }
 
 // LoadFromFile texture
-func (t *TextureContainer) LoadFromFile(d TextureData) error {
+func (t *TextureContainer) LoadFromFile(d *TextureData) error {
+	if d == nil {
+		return nil
+	}
+
 	// TODO Validate path to file
 	image, err := img.Load(d.ImageFilePath)
 	if err != nil {
@@ -48,7 +52,7 @@ func (t *TextureContainer) LoadFromFile(d TextureData) error {
 }
 
 // Get texture by id
-func (t *TextureContainer) Get(d TextureData) (*sdl.Texture, error) {
+func (t *TextureContainer) Get(d *TextureData) (*sdl.Texture, error) {
 	if texture, isFound := t.loaded[d.ID]; isFound {
 		return texture, nil
 	}

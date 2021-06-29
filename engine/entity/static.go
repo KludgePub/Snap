@@ -1,21 +1,25 @@
 package entity
 
-// Static not movable, not intractable just image on screen
-type Static struct {
-	Position Position
-	DrawableInformation DrawableInformation
-	reachRight bool
+// StaticObject not movable, not intractable just image on screen
+type StaticObject struct {
+	Position            *Position
+	DrawableInformation *DrawableInformation
+}
+
+// NewStaticObject simple static object, can image, can be building
+func NewStaticObject(position *Position, drawableInformation *DrawableInformation) *StaticObject {
+	return &StaticObject{Position: position, DrawableInformation: drawableInformation}
 }
 
 // OnUpdate will do nothing, it's static object
-func (s *Static) OnUpdate() {}
+func (s *StaticObject) OnUpdate() {}
 
 // GetDrawableInformation about object
-func (s *Static) GetDrawableInformation() DrawableInformation {
+func (s *StaticObject) GetDrawableInformation() *DrawableInformation {
 	return s.DrawableInformation
 }
 
 // GetPosition in the scene
-func (s *Static) GetPosition() Position {
+func (s *StaticObject) GetPosition() *Position {
 	return s.Position
 }

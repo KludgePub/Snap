@@ -37,10 +37,13 @@ type snapEngine struct {
 
 	//
 	// Other dependencies
+	fontContainer *data.FontContainer
+	symbolFactory *factory.SymbolFactory
 
-	dataTextures  *data.TextureContainer
-	spriteFactory *factory.SpriteFactory
-	log           *logger.Logger
+	textureContainer *data.TextureContainer
+	spriteFactory    *factory.SpriteFactory
+
+	log *logger.Logger
 }
 
 // New creates new instance of engine
@@ -55,7 +58,7 @@ func New(sc platform.ScreenConfiguration, isDebug bool) *snapEngine {
 
 // Init all subsystems, create window
 func (eng *snapEngine) Init() (err error) {
-	eng.log.LogDebug("Initializing graphics and creating window...")
+	eng.log.LogDebug("Initializing graphics and other dependencies...")
 
 	if eng.nativeWindow, err = graphics.CreateNativeWindow(&eng.screen); err != nil {
 		return err
@@ -64,22 +67,36 @@ func (eng *snapEngine) Init() (err error) {
 		return err
 	}
 
-	eng.dataTextures = data.NewTexturesContainer(eng.renderer)
-	eng.spriteFactory = factory.NewSpriteFactory(eng.renderer, eng.dataTextures)
+	eng.textureContainer = data.NewTexturesContainer(eng.renderer)
+	eng.spriteFactory = factory.NewSpriteFactory(eng.renderer, eng.textureContainer)
+
+	if eng.fontContainer, err = data.NewFontContainer(); err != nil {
+		return err
+	}
+	eng.symbolFactory = factory.NewSymbolFactory(eng.fontContainer, eng.renderer)
+
 	eng.isRunning = true
 
 	return nil
 }
 
 // LoadComponents to engine with external logic
-func (eng *snapEngine) LoadComponents(sceneObjects []entity.SceneObject) error {
+func (eng *snapEngine) LoadComponents(so []entity.SceneObject) error {
 	eng.log.LogDebug("Loading components...")
-	eng.sceneObjects = sceneObjects
+	eng.sceneObjects = so
 
 	// TODO Load in async
 	for _, actor := range eng.sceneObjects {
-		if err := eng.dataTextures.LoadFromFile(actor.GetDrawableInformation().TextureData); err != nil {
-			return err
+		drawInfo := actor.GetDrawableInformation()
+
+		errTexture := eng.textureContainer.LoadFromFile(drawInfo.TextureData)
+		if errTexture != nil {
+			return errTexture
+		}
+
+		errFont := eng.fontContainer.LoadFromFile(drawInfo.FontData)
+		if errFont != nil {
+			return errFont
 		}
 	}
 
@@ -92,7 +109,7 @@ func (eng *snapEngine) LoadComponents(sceneObjects []entity.SceneObject) error {
 func (eng *snapEngine) UnloadComponents() {
 	eng.log.LogDebug("Unload components...")
 
-	for n, t := range eng.dataTextures.GetAll() {
+	for n, t := range eng.textureContainer.GetAll() {
 		if err := t.Destroy(); err != nil {
 			eng.log.LogDebugWithObject(fmt.Sprintf("Texture (%s) was destroyed with error", n), err.Error())
 		}
@@ -142,6 +159,9 @@ func (eng *snapEngine) HandleRender() error {
 		}
 
 		if err := eng.spriteFactory.Draw(actor, flipMode); err != nil {
+			return err
+		}
+		if err := eng.symbolFactory.Draw(actor); err != nil {
 			return err
 		}
 	}

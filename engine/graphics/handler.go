@@ -2,8 +2,10 @@ package graphics
 
 import (
 	"fmt"
-	"github.com/LinMAD/Snap/engine/platform"
+
 	"github.com/veandco/go-sdl2/sdl"
+
+	"github.com/LinMAD/Snap/engine/platform"
 )
 
 // CreateNativeWindow for engine

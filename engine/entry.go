@@ -10,7 +10,7 @@ import (
 
 // Entry point for application
 type Entry struct {
-	sc           *platform.ScreenConfiguration
+	config       *platform.ScreenConfiguration
 	sceneObjects []entity.SceneObject
 	isDebug      bool
 }
@@ -22,7 +22,7 @@ func init() {
 // New engine entry point for application
 func New(screenConfig *platform.ScreenConfiguration, isDebugMode bool) Entry {
 	return Entry{
-		sc:      screenConfig,
+		config:  screenConfig,
 		isDebug: isDebugMode,
 	}
 }
@@ -39,12 +39,12 @@ func (e *Entry) Run() error {
 	var frameDelay int32  // SetDelay time before next frame
 
 	// Check frame lock
-	if e.sc.FrameRateLock == 0 {
-		e.sc.FrameRateLock = 60 // Common refresh rate of monitors
+	if e.config.FrameRateLock == 0 {
+		e.config.FrameRateLock = 60 // Common refresh rate of monitors
 	}
 
 	// Boot it up
-	snapEngine := core.New(*e.sc, e.isDebug)
+	snapEngine := core.New(*e.config, e.isDebug)
 	if err := snapEngine.Init(); err != nil {
 		return err
 	}
@@ -52,7 +52,7 @@ func (e *Entry) Run() error {
 		return err
 	}
 
-	frameDelay = int32(1000 / e.sc.FrameRateLock) // Max time between frames
+	frameDelay = int32(1000 / e.config.FrameRateLock) // Max time between frames
 	for snapEngine.IsRunning() {
 		frameStart = snapEngine.DeltaTime()
 
@@ -66,7 +66,7 @@ func (e *Entry) Run() error {
 
 		// Slow down render if the system can work too fast
 		if frameDelay > frameTime {
-			snapEngine.SetFps(e.sc.FrameRateLock / uint16(frameTime+1))
+			snapEngine.SetFps(e.config.FrameRateLock / uint16(frameTime+1))
 			snapEngine.SetDelay(uint32(frameDelay - frameTime))
 		}
 	}
