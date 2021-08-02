@@ -22,7 +22,6 @@ type snapEngine struct {
 	isRunning     bool
 	isHasFocus    bool
 	isLevelLoaded bool
-	fps           uint16
 
 	//
 	// Graphics related
@@ -82,8 +81,10 @@ func (eng *snapEngine) Init() (err error) {
 
 // LoadComponents to engine with external logic
 func (eng *snapEngine) LoadComponents(so []entity.SceneObject) error {
-	eng.log.LogDebug("Loading components...")
 	eng.sceneObjects = so
+
+	eng.log.LogDebug(fmt.Sprintf("Found scene actors: %d ...", len(eng.sceneObjects)))
+	eng.log.LogDebug(fmt.Sprintf("Loading textures and fonts ..."))
 
 	// TODO Load in async
 	for _, actor := range eng.sceneObjects {
@@ -138,8 +139,7 @@ func (eng *snapEngine) HandleEvents() {
 
 // HandleUpdate of engine state, physics simulation etc
 func (eng *snapEngine) HandleUpdate() {
-	// TODO Add Engine state handler
-	eng.nativeWindow.SetTitle(fmt.Sprintf("%s |FPS: %d|", eng.screen.Title, eng.fps))
+	eng.nativeWindow.SetTitle(fmt.Sprintf("%s", eng.screen.Title))
 
 	for _, actor := range eng.sceneObjects {
 		actor.OnUpdate()
@@ -210,9 +210,4 @@ func (eng *snapEngine) DeltaTime() uint32 {
 // SetDelay waits milliseconds before continuing
 func (eng *snapEngine) SetDelay(milliSeconds uint32) {
 	sdl.Delay(milliSeconds)
-}
-
-// SetFps counter
-func (eng *snapEngine) SetFps(fps uint16) {
-	eng.fps = fps
 }
